@@ -6,10 +6,3 @@ driver_no_id_schema = {
     },
     "required": ["name", "car"]
 }
-#     DriverNoId:
-#       type: object
-#       properties:
-#         name:
-#           type: string
-#         car:
-#           type: string
