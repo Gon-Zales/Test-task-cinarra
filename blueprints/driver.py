@@ -13,3 +13,11 @@ driver_api = Blueprint('drivers', __name__, url_prefix='/drivers')
 def create():
     driver = Driver.create_from_json(request.json)
     return jsonify({'id': driver.get_id(), 'name': driver.name, 'car': driver.car}), 201
+
+
+hello_api = Blueprint('hello', __name__, url_prefix='/hello')
+
+
+@hello_api.route('', methods=['GET'])
+def hello():
+    return 200

@@ -11,11 +11,11 @@ database.create_tables([Driver, Client, Order])
 app = Flask(__name__)
 
 
-@app.before_request
-def get_db():
-    if 'db' not in g:
-        g.db = database
-        g.db.connect()
+# @app.before_request
+# def get_db():
+#     if 'db' not in g:
+#         g.db = database
+#         g.db.connect()
 
 
 @app.teardown_appcontext
@@ -29,6 +29,12 @@ def teardown_db(exception):
 app.register_blueprint(driver_api)
 
 # print(app.url_map)
+
+
+@app.route('/hello')
+def hello():
+    return 'Hello, World!', 200
+
 
 if __name__ == '__main__':
     app.run()
