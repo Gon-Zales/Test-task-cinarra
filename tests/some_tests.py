@@ -18,12 +18,21 @@ def client(app_test):
 stub = {"name": "dsd", "car": "Masdas"}
 
 
+def compare_driver(d1, d2, ignore_id=True):
+    assert d1["name"] == d2["name"]
+    assert d1["car"] == d2["car"]
+    if ignore_id:
+        assert type(d1["id"]) is int
+    else:
+        assert d1["id"] == d2["id"]
+
+
 def test_driver_create(client):
     response = client.post('/drivers', json=stub)
     assert response.status_code == 201
     driver = response.json
     # TODO write a constructor and override comparison to shorten such validations
-    assert type(driver["id"]) is int, driver["name"] is stub["name"] and driver["car"] is stub["car"]
+    compare_driver(driver, stub)
     response = client.post('/drivers', json={"car": "dasdas"})
     assert response.status_code == 400
     response = client.post('/drivers', json={"name": "dsd"})
@@ -42,12 +51,14 @@ def test_driver_find(client):
     response = client.get('/drivers', json={"driverId": 1})
     assert response.status_code == 200
     driver = response.json
-    assert driver["id"] == 1 and driver["name"] == stub["name"] and driver["car"] == stub["car"]
+    assert driver["id"] == 1
+    expected_result = stub.copy()
+    expected_result["id"] = 1
+    compare_driver(driver, stub)
     response = client.get('/drivers', json={"driverId": 2785})
     assert response.status_code == 404
     response = client.get('/drivers', json={"driverId": "2785"})
     assert response.status_code == 400
-
 
 # TODO - 9 requests, each has to have at least two tests - to fail and to pass.
 # TODO - Exhaust possible fail cases
