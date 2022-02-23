@@ -16,9 +16,16 @@ def client(app_test):
 
 
 stub = {"name": "dsd", "car": "Masdas"}
+driver_id = -89
 
 
-def compare_driver(d1, d2, ignore_id=True):
+def stub_w_id():
+    res = stub.copy()
+    res["id"] = driver_id
+    return res
+
+
+def compare_driver(d1, d2, ignore_id):
     assert d1["name"] == d2["name"]
     assert d1["car"] == d2["car"]
     if ignore_id:
@@ -32,7 +39,10 @@ def test_driver_create(client):
     assert response.status_code == 201
     driver = response.json
     # TODO write a constructor and override comparison to shorten such validations
-    compare_driver(driver, stub)
+    compare_driver(driver, stub, True)
+    global driver_id
+    driver_id = driver["id"]
+
     response = client.post('/drivers', json={"car": "dasdas"})
     assert response.status_code == 400
     response = client.post('/drivers', json={"name": "dsd"})
@@ -48,13 +58,11 @@ def test_driver_create(client):
 
 
 def test_driver_find(client):
-    response = client.get('/drivers', json={"driverId": 1})
+    response = client.get('/drivers', json={"driverId": driver_id})
     assert response.status_code == 200
     driver = response.json
-    assert driver["id"] == 1
-    expected_result = stub.copy()
-    expected_result["id"] = 1
-    compare_driver(driver, stub)
+    assert driver["id"] == driver_id
+    compare_driver(driver, stub_w_id(), False)
     response = client.get('/drivers', json={"driverId": 2785})
     assert response.status_code == 404
     response = client.get('/drivers', json={"driverId": "2785"})
