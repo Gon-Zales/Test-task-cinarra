@@ -4,7 +4,6 @@ from flask_expects_json import expects_json
 from models.driver_model import Driver
 from schemas.driver_no_id import driver_no_id_schema
 
-
 driver_api = Blueprint('drivers', __name__, url_prefix='/drivers')
 
 
@@ -20,4 +19,4 @@ hello_api = Blueprint('hello', __name__, url_prefix='/hello')
 
 @hello_api.route('', methods=['GET'])
 def hello():
-    return 200
+    return 'Hello, World!', 200
