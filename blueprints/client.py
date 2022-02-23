@@ -1,38 +1,37 @@
-from flask import Blueprint, request, jsonify
-from flask_expects_json import expects_json
-
-from models.driver_model import Driver
-from schemas.driver_no_id import driver_no_id_schema
-
-driver_api = Blueprint('drivers', __name__, url_prefix='/drivers')
-
-
-@driver_api.route('', methods=['POST'])
-@expects_json(driver_no_id_schema)
-def create():
-    driver = Driver.create_from_json(request.json)
-    return jsonify({'id': driver.get_id(), 'name': driver.name, 'car': driver.car}), 201
+# TODO POST  /clients Занести в базу клиента
+#   /clients:
+#     post:
+#       tags:
+#       - clients
+#       summary: Занести в базу клиента
+#       requestBody:
+#         description: Объект клиента для создания в базе
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/ClientNoId'
+#         required: true
 #       responses:
 #         201:
 #           description: created!
 #           content:
 #             application/json:
 #               schema:
-#                 $ref: '#/components/schemas/Driver'
+#                 $ref: '#/components/schemas/Client'
 #         400:
 #           description: Неправильный запрос
 #           content: {}
 
 
-# TODO GET /drivers Найти водителя по id
+# TODO GET  /clients Найти клиента по ID
 #     get:
 #       tags:
-#       - drivers
-#       summary: Найти водителя по id
+#       - clients
+#       summary: Найти клиента по ID
 #       parameters:
-#       - name: driverId
+#       - name: clientId
 #         in: query
-#         description: ID Водителя
+#         description: ID клиента
 #         required: true
 #         schema:
 #           type: integer
@@ -43,7 +42,7 @@ def create():
 #           content:
 #             application/json:
 #               schema:
-#                 $ref: '#/components/schemas/Driver'
+#                 $ref: '#/components/schemas/Client'
 #         400:
 #           description: Неправильный запрос
 #           content: {}
@@ -52,16 +51,16 @@ def create():
 #           content: {}
 
 
-# TODO DELETE  /drivers/{driverId} Удалить водителя из системы
-#   /drivers/{driverId}:
+# TODO DELETE  /clients/{clientId} Удалить клиента из базы
+#   /clients/{clientId}:
 #     delete:
 #       tags:
-#       - drivers
-#       summary: Удалить водителя из системы
+#       - clients
+#       summary: Удалить клиента из базы
 #       parameters:
-#       - name: driverId
+#       - name: clientId
 #         in: path
-#         description: ID водителя для удаления
+#         description: ID Клиента
 #         required: true
 #         schema:
 #           type: integer
@@ -72,10 +71,12 @@ def create():
 #           content:
 #             application/json:
 #               schema:
-#                 $ref: '#/components/schemas/Driver'
+#                 $ref: '#/components/schemas/Client'
 #         400:
 #           description: Неправильный запрос
 #           content: {}
 #         404:
 #           description: Объект в базе не найден
 #           content: {}
+
+
