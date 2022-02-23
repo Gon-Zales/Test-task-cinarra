@@ -37,5 +37,17 @@ def test_driver_create(client):
     response = client.post('/drivers', json={"name": None, "car": "dasdas"})
     assert response.status_code == 400
 
+
+def test_driver_find(client):
+    response = client.get('/drivers', json={"driverId": 1})
+    assert response.status_code == 200
+    driver = response.json
+    assert driver["id"] == 1 and driver["name"] == stub["name"] and driver["car"] == stub["car"]
+    response = client.get('/drivers', json={"driverId": 2785})
+    assert response.status_code == 404
+    response = client.get('/drivers', json={"driverId": "2785"})
+    assert response.status_code == 400
+
+
 # TODO - 9 requests, each has to have at least two tests - to fail and to pass.
 # TODO - Exhaust possible fail cases
