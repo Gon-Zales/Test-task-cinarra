@@ -68,5 +68,17 @@ def test_driver_find(client):
     response = client.get('/drivers', json={"driverId": "2785"})
     assert response.status_code == 400
 
+
+def test_driver_delete(client):
+    driver = client.get('/drivers', json={"driverId": driver_id}).json
+    response = client.delete('/drivers', json={"driverId": driver_id})
+    assert response.status_code == 200
+    deleted = response.json
+    assert deleted == driver
+    response = client.delete('/drivers', json={"driverId": driver_id})
+    assert response.status_code == 404
+    response = client.delete('/drivers', json={"driverId": "2785"})
+    assert response.status_code == 400
+
 # TODO - 9 requests, each has to have at least two tests - to fail and to pass.
 # TODO - Exhaust possible fail cases
