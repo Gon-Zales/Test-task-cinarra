@@ -1,21 +1,18 @@
-# TODO POST /clients Занести в базу клиента - тело клиента, без айди
-#     Client:
-#       type: object
-#       properties:
-#         id:
-#           type: integer
-#           format: int64
-#         name:
-#           type: string
-#         is_vip:
-#           type: boolean
+client_schema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "is_vip": {"type": "boolean"},
+        "name": {"type": "string"}
+    },
+    "required": ["id", "is_vip", "name"]
+}
 
-
-# TODO GET /clients Найти клиента по ID - только айди
-#     ClientNoId:
-#       type: object
-#       properties:
-#         name:
-#           type: string
-#         is_vip:
-#           type: boolean
+client_no_id_schema = {
+    "type": "object",
+    "properties": {
+        "is_vip": {"type": "boolean"},
+        "name": {"type": "string"}
+    },
+    "required": ["is_vip", "name"]
+}

@@ -79,6 +79,3 @@ def test_driver_delete(client):
     assert response.status_code == 404
     response = client.delete('/drivers', json={"driverId": "2785"})
     assert response.status_code == 400
-
-# TODO - 9 requests, each has to have at least two tests - to fail and to pass.
-# TODO - Exhaust possible fail cases
