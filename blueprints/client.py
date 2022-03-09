@@ -1,82 +1,38 @@
-# TODO POST  /clients Занести в базу клиента
-#   /clients:
-#     post:
-#       tags:
-#       - clients
-#       summary: Занести в базу клиента
-#       requestBody:
-#         description: Объект клиента для создания в базе
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/ClientNoId'
-#         required: true
-#       responses:
-#         201:
-#           description: created!
-#           content:
-#             application/json:
-#               schema:
-#                 $ref: '#/components/schemas/Client'
-#         400:
-#           description: Неправильный запрос
-#           content: {}
+from flask import Blueprint, request, jsonify
+from flask_expects_json import expects_json
+from peewee import DoesNotExist
+
+from models.client_model import Client
+from schemas.client_schemas import client_no_id_schema
+
+client_api = Blueprint('clients', __name__, url_prefix='/clients')
 
 
-# TODO GET  /clients Найти клиента по ID
-#     get:
-#       tags:
-#       - clients
-#       summary: Найти клиента по ID
-#       parameters:
-#       - name: clientId
-#         in: query
-#         description: ID клиента
-#         required: true
-#         schema:
-#           type: integer
-#           format: int64
-#       responses:
-#         200:
-#           description: successful operation
-#           content:
-#             application/json:
-#               schema:
-#                 $ref: '#/components/schemas/Client'
-#         400:
-#           description: Неправильный запрос
-#           content: {}
-#         404:
-#           description: Объект в базе не найден
-#           content: {}
+def client_to_json(client):
+    return jsonify({'id': client.get_id(), 'name': client.name, 'is_vip': client.is_vip})
 
 
-# TODO DELETE  /clients/{clientId} Удалить клиента из базы
-#   /clients/{clientId}:
-#     delete:
-#       tags:
-#       - clients
-#       summary: Удалить клиента из базы
-#       parameters:
-#       - name: clientId
-#         in: path
-#         description: ID Клиента
-#         required: true
-#         schema:
-#           type: integer
-#           format: int64
-#       responses:
-#         204:
-#           description: Удалено
-#           content:
-#             application/json:
-#               schema:
-#                 $ref: '#/components/schemas/Client'
-#         400:
-#           description: Неправильный запрос
-#           content: {}
-#         404:
-#           description: Объект в базе не найден
-#           content: {}
+@client_api.route('', methods=['POST'])
+@expects_json(client_no_id_schema)
+def create():
+    client = Client.create_from_json(request.json)
+    return client_to_json(client), 201
 
 
+@client_api.route('', methods=['GET'])
+def get():
+    try:
+        client = Client.get_by_id(request.args["clientId"])
+    except DoesNotExist as ie:
+        return "client id is not found", 404
+    return client_to_json(client), 200
+
+
+@client_api.route('<client_id>', methods=['DELETE'])
+def delete(client_id):
+    try:
+        client = Client.get_by_id(client_id)
+        client.delete_instance()
+    except DoesNotExist as ie:
+        return "Client id is not found", 404
+    return client_to_json(client), 200

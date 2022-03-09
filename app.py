@@ -1,6 +1,7 @@
 from flask import Flask, g
 
 from blueprints.driver import driver_api
+from blueprints.client import client_api
 from database import database
 from models.client_model import Client
 from models.driver_model import Driver
@@ -27,6 +28,7 @@ def teardown_db(exception):
 
 
 app.register_blueprint(driver_api)
+app.register_blueprint(client_api)
 # print(app.url_map)
 
 if __name__ == '__main__':

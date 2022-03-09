@@ -1,4 +1,4 @@
-client_schema = {
+client_id_schema = {
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
