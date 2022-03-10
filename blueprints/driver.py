@@ -25,20 +25,16 @@ def create():
 def get():
     try:
         driver = Driver.get_by_id(request.json["driverId"])
-    except DoesNotExist as ie:
+    except DoesNotExist as _:
         return "Driver id is not found", 404
     return driver_to_json(driver), 200
 
 
-@driver_api.route('', methods=['DELETE'])
-@expects_json(driver_id_schema)
-def delete():
+@driver_api.route('<driver_id>', methods=['DELETE'])
+def delete(driver_id):
     try:
-        driver_id = request.json["driverId"]
         driver = Driver.get_by_id(driver_id)
-        deleted_id = driver.delete_instance()
-        if driver_id != deleted_id:
-            raise Exception("Wrong driver deleted")
-    except DoesNotExist as ie:
+        driver.delete_instance()
+    except DoesNotExist as _:
         return "Driver id is not found", 404
     return driver_to_json(driver), 200
