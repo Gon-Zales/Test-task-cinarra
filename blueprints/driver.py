@@ -3,7 +3,6 @@ from flask_expects_json import expects_json
 from peewee import DoesNotExist
 
 from models.driver_model import Driver
-from schemas.driver_id import driver_id_schema
 from schemas.driver_no_id import driver_no_id_schema
 
 driver_api = Blueprint('drivers', __name__, url_prefix='/drivers')
@@ -21,10 +20,9 @@ def create():
 
 
 @driver_api.route('', methods=['GET'])
-@expects_json(driver_id_schema)
 def get():
     try:
-        driver = Driver.get_by_id(request.json["driverId"])
+        driver = Driver.get_by_id(request.values["driverId"])
     except DoesNotExist as _:
         return "Driver id is not found", 404
     return driver_to_json(driver), 200

@@ -2,6 +2,8 @@ from peewee import CharField
 
 from models.base_model import BaseModel
 
+# TODO override comparison to shorten validations. Find a peewee one?
+
 
 class Driver(BaseModel):
     name = CharField()

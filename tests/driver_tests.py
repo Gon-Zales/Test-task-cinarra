@@ -38,39 +38,23 @@ def test_driver_create(client):
     response = client.post('/drivers', json=stub)
     assert response.status_code == 201
     driver = response.json
-    # TODO write a constructor and override comparison to shorten such validations
     compare_driver(driver, stub, True)
     global driver_id
     driver_id = driver["id"]
 
-    response = client.post('/drivers', json={"car": "dasdas"})
-    assert response.status_code == 400
-    response = client.post('/drivers', json={"name": "dsd"})
-    assert response.status_code == 400
-    response = client.post('/drivers', json={"name": "dsd", "car": 123})
-    assert response.status_code == 400
-    response = client.post('/drivers', json={"name": "dsd", "car": None})
-    assert response.status_code == 400
-    response = client.post('/drivers', json={"name": 123, "car": "dasdas"})
-    assert response.status_code == 400
-    response = client.post('/drivers', json={"name": None, "car": "dasdas"})
-    assert response.status_code == 400
-
 
 def test_driver_find(client):
-    response = client.get('/drivers', json={"driverId": driver_id})
+    response = client.get('/drivers', query_string={"driverId": driver_id})
     assert response.status_code == 200
     driver = response.json
     assert driver["id"] == driver_id
     compare_driver(driver, stub_w_id(), False)
-    response = client.get('/drivers', json={"driverId": 2785})
+    response = client.get('/drivers', query_string={"driverId": 2785})
     assert response.status_code == 404
-    response = client.get('/drivers', json={"driverId": "2785"})
-    assert response.status_code == 400
 
 
 def test_driver_delete(client):
-    driver = client.get('/drivers', json={"driverId": driver_id}).json
+    driver = client.get('/drivers', query_string={"driverId": driver_id}).json
     response = client.delete(f'/drivers/{driver_id}')
     assert response.status_code == 200
     deleted = response.json
