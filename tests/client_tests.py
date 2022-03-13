@@ -1,20 +1,3 @@
-import pytest
-from app import app
-
-
-@pytest.fixture()
-def app_test():
-    app.config['TESTING'] = True
-    yield app
-
-
-@pytest.fixture()
-def client(app_test):
-    with app.app_context():
-        with app.test_client() as client:
-            yield client
-
-
 stub = {"name": "dsd", "is_vip": True}
 client_id = -89
 
@@ -42,17 +25,6 @@ def test_client_create(client):
     compare_client(client_json, stub, True)
     global client_id
     client_id = client_json["id"]
-
-    response = client.post('/clients', json={"is_vip": False})
-    assert response.status_code == 400
-    response = client.post('/clients', json={"name": "dsd"})
-    assert response.status_code == 400
-    response = client.post('/clients', json={"name": "dsd", "is_vip": None})
-    assert response.status_code == 400
-    response = client.post('/clients', json={"name": 123, "is_vip": False})
-    assert response.status_code == 400
-    response = client.post('/clients', json={"name": None, "is_vip": False})
-    assert response.status_code == 400
 
 
 def test_client_find(client):

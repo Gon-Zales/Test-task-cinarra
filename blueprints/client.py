@@ -23,7 +23,7 @@ def create():
 def get():
     try:
         client = Client.get_by_id(request.args["clientId"])
-    except DoesNotExist as ie:
+    except DoesNotExist as _:
         return "client id is not found", 404
     return client_to_json(client), 200
 
@@ -33,6 +33,6 @@ def delete(client_id):
     try:
         client = Client.get_by_id(client_id)
         client.delete_instance()
-    except DoesNotExist as ie:
+    except DoesNotExist as _:
         return "Client id is not found", 404
     return client_to_json(client), 200
