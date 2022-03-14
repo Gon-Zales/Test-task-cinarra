@@ -4,7 +4,7 @@ order_no_id_schema = {
         "client_id": {"type": "integer"},
         "driver_id": {"type": "integer"},
 
-        "date_created": {"type": "string($date-time)"},
+        "date_created": {"type": "string"},
         "status": {
             "description": "Order Status",
             "enum": [
@@ -27,7 +27,7 @@ order_schema = {
         "client_id": {"type": "integer"},
         "driver_id": {"type": "integer"},
 
-        "date_created": {"type": "string($date-time)"},
+        "date_created": {"type": "string"},
         "status": {
             "description": "Order Status",
             "enum": [
