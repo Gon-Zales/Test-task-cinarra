@@ -18,7 +18,7 @@ def compare_client(d1, d2, ignore_id):
 
 
 def test_client_create(client):
-    response = client.post('/clients', json=stub)
+    response = client.post('/api/v1/clients', json=stub)
     assert response.status_code == 201
     client_json = response.json
     compare_client(client_json, stub, True)
@@ -27,20 +27,20 @@ def test_client_create(client):
 
 
 def test_client_find(client):
-    response = client.get('/clients', query_string={"clientId": client_id})
+    response = client.get('/api/v1/clients', query_string={"clientId": client_id})
     assert response.status_code == 200
     client_json = response.json
     assert client_json["id"] == client_id
     compare_client(client_json, stub_w_id(), False)
-    response = client.get('/clients', query_string={"clientId": 2785})
+    response = client.get('/api/v1/clients', query_string={"clientId": 2785})
     assert response.status_code == 404
 
 
 def test_client_delete(client):
-    client_json = client.get('/clients', query_string={"clientId": client_id}).json
-    response = client.delete('/clients/' + str(client_id))
+    client_json = client.get('/api/v1/clients', query_string={"clientId": client_id}).json
+    response = client.delete('/api/v1/clients/' + str(client_id))
     assert response.status_code == 200
     deleted = response.json
     assert deleted == client_json
-    response = client.delete('/clients/' + str(client_id))
+    response = client.delete('/api/v1/clients/' + str(client_id))
     assert response.status_code == 404

@@ -35,10 +35,9 @@ def handle_bad_request(e):
     return 'bad request!', 400
 
 
-app.register_blueprint(driver_api)
-app.register_blueprint(client_api)
-app.register_blueprint(order_api)
-print(app.url_map)
+app.register_blueprint(driver_api, url_prefix='/api/v1/drivers')
+app.register_blueprint(client_api, url_prefix='/api/v1/clients')
+app.register_blueprint(order_api, url_prefix='/api/v1/orders')
 
 if __name__ == '__main__':
     app.run(debug=True)
