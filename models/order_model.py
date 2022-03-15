@@ -1,4 +1,6 @@
-from peewee import CharField, ForeignKeyField, TimestampField, DateTimeField
+from datetime import datetime
+
+from peewee import CharField, ForeignKeyField, TimestampField
 
 from models.base_model import BaseModel
 from models.client_model import Client
@@ -16,7 +18,7 @@ class Order(BaseModel):
     address_to = CharField()
     client_id = ForeignKeyField(Client, backref='orders')
     driver_id = ForeignKeyField(Driver, backref='orders')
-    date_created = DateTimeField()  # TODO change to TimestampField()
+    date_created = TimestampField()
     status = CharField()  # TODO create custom field
 
     @staticmethod
@@ -26,6 +28,6 @@ class Order(BaseModel):
             address_to=order['address_to'],
             client_id=order['client_id'],
             driver_id=order['driver_id'],
-            date_created=order['date_created'],
+            date_created=datetime.strptime(order['date_created'], '%Y-%m-%d %H:%M:%S'),
             status=order['status']
         )

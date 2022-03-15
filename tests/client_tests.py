@@ -21,7 +21,6 @@ def test_client_create(client):
     response = client.post('/clients', json=stub)
     assert response.status_code == 201
     client_json = response.json
-    # TODO write a constructor and override comparison to shorten such validations
     compare_client(client_json, stub, True)
     global client_id
     client_id = client_json["id"]

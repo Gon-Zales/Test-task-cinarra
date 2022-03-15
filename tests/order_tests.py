@@ -11,7 +11,7 @@ def get_stub():
     return {
         "client_id": client_id,
         "driver_id": driver_id,
-        "date_created": "2022-03-13T13:45:50.536Z",
+        "date_created": "2022-03-13 14:45:50",
         "status": NOT_ACCEPTED,
         "address_from": "dsd",
         "address_to": "dsd",
@@ -73,7 +73,7 @@ def test_order_change(client):
 
     stub["client_id"] = order_json["client_id"] = client_id
     stub["driver_id"] = order_json["driver_id"] = driver_id
-    stub["date_created"] = order_json["date_created"] = "2021-03-13T13:45:50.536Z"
+    stub["date_created"] = order_json["date_created"] = "2021-03-13 14:45:50"
     response = client.put(f'/orders/{order_id}', json=order_json)
     assert response.status_code == 200
 
@@ -81,7 +81,7 @@ def test_order_change(client):
         stub["status"] = order_json["status"] = ORDER_STATUS[i]
         response = client.put(f'/orders/{order_id}', json=order_json)
         order = client.get('/orders', query_string={"orderId": order_id}).json
-        assert response.status_code == 200 and order["status"]==ORDER_STATUS[i]
+        assert response.status_code == 200 and order["status"] == ORDER_STATUS[i]
 
     order = client.get('/orders', query_string={"orderId": order_id}).json
     compare_order(order, stub, False)
