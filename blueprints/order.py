@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_expects_json import expects_json
 from peewee import DoesNotExist
 
-from models.order_model import Order, ORDER_STATUS, NOT_ACCEPTED, IN_PROGRESS, CANCELLED, DONE
+from models.order_model import Order, NOT_ACCEPTED, STATUS_CHANGE
 from schemas.order_schemas import order_no_id_schema, order_schema
 
 order_api = Blueprint('orders', __name__, url_prefix='/orders')
@@ -31,6 +31,16 @@ def create():
     return order_to_json(order), 201
 
 
+@order_api.route('/test', methods=['POST'])
+@expects_json(order_no_id_schema)
+def create_any_status():
+    from app import app
+    if not app.testing:  # Probably should think for a minute in search of a more elegant solution
+        return 90000
+    order = Order.create_from_json(request.json)
+    return order_to_json(order), 201
+
+
 @order_api.route('', methods=['GET'])
 def get():
     try:
@@ -38,18 +48,6 @@ def get():
     except DoesNotExist as _:
         return "order id is not found", 404
     return order_to_json(order), 200
-
-
-def is_status_change_valid(old, new):
-    if old == new:
-        return True
-    if old == NOT_ACCEPTED and new == DONE:
-        return False
-    elif old == IN_PROGRESS and new == NOT_ACCEPTED:
-        return False
-    elif old == CANCELLED or old == DONE:
-        return False
-    return True
 
 
 def update_order(order, json):
@@ -69,9 +67,11 @@ def change(order_id):
         order = Order.get_by_id(order_id)
     except DoesNotExist as _:
         return "order id is not found", 404
-
-    new_status = request.json["status"]
-    if not is_status_change_valid(order, new_status):
-        return "invalid status change", 400
-    update_order(order, request.json)
-    return order_to_json(order), 200
+    try:
+        new_status = request.json["status"]
+        if (order.status, new_status, True) not in STATUS_CHANGE:
+            return "invalid status change", 400
+        update_order(order, request.json)
+        return order_to_json(order), 200
+    except Exception as e:
+        return e.__str__(), 400

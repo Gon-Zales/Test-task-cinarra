@@ -11,6 +11,24 @@ IN_PROGRESS = "in_progress"
 DONE = "done"
 CANCELLED = "cancelled"
 ORDER_STATUS = ("not_accepted", "in_progress", "done", "cancelled")
+STATUS_CHANGE = [
+    (NOT_ACCEPTED, NOT_ACCEPTED, True),
+    (NOT_ACCEPTED, IN_PROGRESS, True),
+    (NOT_ACCEPTED, CANCELLED, True),
+    (NOT_ACCEPTED, DONE, False),
+    (IN_PROGRESS, NOT_ACCEPTED, False),
+    (IN_PROGRESS, IN_PROGRESS, True),
+    (IN_PROGRESS, CANCELLED, True),
+    (IN_PROGRESS, DONE, True),
+    (CANCELLED, NOT_ACCEPTED, False),
+    (CANCELLED, IN_PROGRESS, False),
+    (CANCELLED, CANCELLED, True),
+    (CANCELLED, DONE, False),
+    (DONE, NOT_ACCEPTED, False),
+    (DONE, IN_PROGRESS, False),
+    (DONE, CANCELLED, False),
+    (DONE, DONE, True)
+]
 
 
 class Order(BaseModel):

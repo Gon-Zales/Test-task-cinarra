@@ -1,4 +1,4 @@
-import werkzeug
+from werkzeug import exceptions
 from flask import Flask, g
 
 from blueprints.driver import driver_api
@@ -29,7 +29,7 @@ def teardown_db(exception):
         db.close()
 
 
-@app.errorhandler(werkzeug.exceptions.BadRequest)
+@app.errorhandler(exceptions.BadRequest)
 def handle_bad_request(e):
     print(e)
     return 'bad request!', 400
