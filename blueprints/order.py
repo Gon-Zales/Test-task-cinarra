@@ -5,7 +5,8 @@ from flask_expects_json import expects_json
 from peewee import DoesNotExist
 
 from models.order_model import Order, NOT_ACCEPTED, STATUS_CHANGE
-from schemas.order_schemas import order_no_id_schema, order_schema
+from schemas.order_schema import order_schema
+from schemas.order_no_id_schema import order_no_id_schema
 
 order_api = Blueprint('orders', __name__, url_prefix='/orders')
 

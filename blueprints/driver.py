@@ -3,7 +3,7 @@ from flask_expects_json import expects_json
 from peewee import DoesNotExist
 
 from models.driver_model import Driver
-from schemas.driver_no_id import driver_no_id_schema
+from schemas.driver_no_id_schema import driver_no_id_schema
 
 driver_api = Blueprint('drivers', __name__, url_prefix='/drivers')
 

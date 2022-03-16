@@ -3,7 +3,7 @@ from flask_expects_json import expects_json
 from peewee import DoesNotExist
 
 from models.client_model import Client
-from schemas.client_schemas import client_no_id_schema
+from schemas.client_no_id_schema import client_no_id_schema
 
 client_api = Blueprint('clients', __name__, url_prefix='/clients')
 

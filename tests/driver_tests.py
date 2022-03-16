@@ -39,8 +39,7 @@ def test_driver_find(client):
 def test_driver_delete(client):
     driver = client.get('/api/v1/drivers', query_string={"driverId": driver_id}).json
     response = client.delete(f'/api/v1/drivers/{driver_id}')
-    assert response.status_code == 200
-    deleted = response.json
-    assert deleted == driver
-    response = client.delete(f'/api/v1/drivers/{2785}')
+    assert response.status_code == 200 and response.json == driver
+
+    response = client.delete(f'/api/v1/drivers/{driver_id}')
     assert response.status_code == 404

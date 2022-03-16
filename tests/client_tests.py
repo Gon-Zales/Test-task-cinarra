@@ -38,9 +38,9 @@ def test_client_find(client):
 
 def test_client_delete(client):
     client_json = client.get('/api/v1/clients', query_string={"clientId": client_id}).json
-    response = client.delete('/api/v1/clients/' + str(client_id))
+    response = client.delete(f'/api/v1/clients/{client_id}')
     assert response.status_code == 200
     deleted = response.json
     assert deleted == client_json
-    response = client.delete('/api/v1/clients/' + str(client_id))
+    response = client.delete(f'/api/v1/clients/{client_id}')
     assert response.status_code == 404
