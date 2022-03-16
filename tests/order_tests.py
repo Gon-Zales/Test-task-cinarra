@@ -1,11 +1,29 @@
 from client_tests import stub as client_stub
 from driver_tests import stub as driver_stub
-from models.order_model import ORDER_STATUS, NOT_ACCEPTED, STATUS_CHANGE
+from models.order_model import ORDER_STATUS, NOT_ACCEPTED, IN_PROGRESS, CANCELLED, DONE
 
 client_id = None
 driver_id = None
 order_id = -89
 
+STATUS_CHANGE = [
+    (NOT_ACCEPTED, NOT_ACCEPTED, True),
+    (NOT_ACCEPTED, IN_PROGRESS, True),
+    (NOT_ACCEPTED, CANCELLED, True),
+    (NOT_ACCEPTED, DONE, False),
+    (IN_PROGRESS, NOT_ACCEPTED, False),
+    (IN_PROGRESS, IN_PROGRESS, True),
+    (IN_PROGRESS, CANCELLED, True),
+    (IN_PROGRESS, DONE, True),
+    (CANCELLED, NOT_ACCEPTED, False),
+    (CANCELLED, IN_PROGRESS, False),
+    (CANCELLED, CANCELLED, True),
+    (CANCELLED, DONE, False),
+    (DONE, NOT_ACCEPTED, False),
+    (DONE, IN_PROGRESS, False),
+    (DONE, CANCELLED, False),
+    (DONE, DONE, True)
+]
 
 def get_stub():
     return {
