@@ -51,16 +51,6 @@ def get():
     return order_to_json(order), 200
 
 
-def update_order(order, json):
-    if json["status"] == NOT_ACCEPTED:
-        order.client_id = json['client_id']
-        order.driver_id = json['driver_id']
-        order.date_created = datetime.fromisoformat(json['date_created'])
-    else:
-        order.status = json["status"]
-    order.save()
-
-
 @order_api.route('<order_id>', methods=['PUT'])
 @expects_json(order_schema)
 def change(order_id):
@@ -70,9 +60,18 @@ def change(order_id):
         return "order id is not found", 404
     try:
         new_status = request.json["status"]
-        if (order.status, new_status) not in STATUS_CHANGE and order.status != new_status:
-            return "invalid status change", 400
-        update_order(order, request.json)
+        if order.status != new_status:
+            if (order.status, new_status) in STATUS_CHANGE:
+                order.status = new_status
+            else:
+                return "illegal status change attempt", 400
+        elif new_status == NOT_ACCEPTED:
+            order.client_id = request.json['client_id']
+            order.driver_id = request.json['driver_id']
+            order.date_created = datetime.fromisoformat(request.json['date_created'])
+        else:
+            return "cant change data when status is accepted", 400
+        order.save()
         return order_to_json(order), 200
     except Exception as e:
         return e.__str__(), 400

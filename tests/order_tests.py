@@ -2,8 +2,6 @@ from client_tests import stub as client_stub
 from driver_tests import stub as driver_stub
 from models.order_model import ORDER_STATUS, NOT_ACCEPTED, IN_PROGRESS, CANCELLED, DONE
 
-client_id = None
-driver_id = None
 order_id = -89
 
 STATUS_CHANGE = [
@@ -12,21 +10,23 @@ STATUS_CHANGE = [
     (NOT_ACCEPTED, CANCELLED, True),
     (NOT_ACCEPTED, DONE, False),
     (IN_PROGRESS, NOT_ACCEPTED, False),
-    (IN_PROGRESS, IN_PROGRESS, True),
+    (IN_PROGRESS, IN_PROGRESS, False),
     (IN_PROGRESS, CANCELLED, True),
     (IN_PROGRESS, DONE, True),
     (CANCELLED, NOT_ACCEPTED, False),
     (CANCELLED, IN_PROGRESS, False),
-    (CANCELLED, CANCELLED, True),
+    (CANCELLED, CANCELLED, False),
     (CANCELLED, DONE, False),
     (DONE, NOT_ACCEPTED, False),
     (DONE, IN_PROGRESS, False),
     (DONE, CANCELLED, False),
-    (DONE, DONE, True)
+    (DONE, DONE, False)
 ]
 
 
-def get_stub():
+def get_stub(client):
+    driver_id = client.post('/api/v1/drivers', json=driver_stub).json["id"]
+    client_id = client.post('/api/v1/clients', json=client_stub).json["id"]
     return {
         "client_id": client_id,
         "driver_id": driver_id,
@@ -37,8 +37,8 @@ def get_stub():
     }
 
 
-def stub_w_id():
-    res = get_stub().copy()
+def stub_w_id(client):
+    res = get_stub(client).copy()
     res["id"] = order_id
     return res
 
@@ -56,15 +56,13 @@ def compare_order(d1, d2, ignore_id):
 
 
 def test_order_create(client):
-    global driver_id, client_id
-    driver_id = client.post('/api/v1/drivers', json=driver_stub).json["id"]
-    client_id = client.post('/api/v1/clients', json=client_stub).json["id"]
-    response = client.post('/api/v1/orders', json=get_stub())
+    stub = get_stub(client)
+    response = client.post('/api/v1/orders', json=stub)
     assert response.status_code == 201
     order = response.json
-    compare_order(order, get_stub(), True)
+    compare_order(order, stub, True)
 
-    stub = get_stub()
+    stub = get_stub(client)
     for i in range(1, 3):
         stub["status"] = ORDER_STATUS[i]
         response = client.post('/api/v1/orders', json=stub)
@@ -74,26 +72,27 @@ def test_order_create(client):
 
 
 def test_order_find(client):
-    response = client.get('/api/v1/orders', query_string={"orderId": order_id})
+    stub = get_stub(client)
+    id_ = client.post('/api/v1/orders', json=stub).json["id"]
+    stub["id"] = id_
+    response = client.get('/api/v1/orders', query_string={"orderId": id_})
     assert response.status_code == 200
     order = response.json
-    assert order["id"] == order_id
-    compare_order(order, stub_w_id(), False)
+    assert order["id"] == id_
+    compare_order(order, stub, False)
     response = client.get('/api/v1/orders', query_string={"orderId": 2785})
     assert response.status_code == 404
 
 
 def test_order_status_change(client):
-    driver_id = client.post('/api/v1/drivers', json=driver_stub).json["id"]
-    client_id = client.post('/api/v1/clients', json=client_stub).json["id"]
-    stub = get_stub()
+    stub = get_stub(client)
 
     for old_status, new_status, is_valid in STATUS_CHANGE:
         stub["status"] = old_status
-        order_id = client.post('/api/v1/orders/test', json=stub).json["id"]
+        order_id_ = client.post('/api/v1/orders/test', json=stub).json["id"]
         stub["status"] = new_status
-        stub["id"] = order_id
-        response = client.put(f'/api/v1/orders/{order_id}', json=stub)
+        stub["id"] = order_id_
+        response = client.put(f'/api/v1/orders/{order_id_}', json=stub)
         expected_result = 200 if is_valid else 400
         assert response.status_code == expected_result
 
@@ -101,7 +100,6 @@ def test_order_status_change(client):
 def test_order_change(client):
     order_json = client.get('/api/v1/orders', query_string={"orderId": order_id}).json
 
-    global driver_id, client_id
     illegal_json = order_json.copy()
     illegal_json["client_id"] = 1234
     response = client.put(f'/api/v1/orders/{order_id}', json=illegal_json)
@@ -111,12 +109,7 @@ def test_order_change(client):
     response = client.put(f'/api/v1/orders/{order_id}', json=illegal_json)
     assert response.status_code == 400
 
-    driver_id = client.post('/api/v1/drivers', json=driver_stub).json["id"]
-    client_id = client.post('/api/v1/clients', json=client_stub).json["id"]
-    stub = stub_w_id()
-
-    stub["client_id"] = client_id
-    stub["driver_id"] = driver_id
+    stub = stub_w_id(client)
     stub["date_created"] = "2021-03-16T14:01:03"
     response = client.put(f'/api/v1/orders/{order_id}', json=stub)
     assert response.status_code == 200
