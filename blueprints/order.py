@@ -70,7 +70,7 @@ def change(order_id):
         return "order id is not found", 404
     try:
         new_status = request.json["status"]
-        if (order.status, new_status, True) not in STATUS_CHANGE:
+        if (order.status, new_status) not in STATUS_CHANGE and order.status != new_status:
             return "invalid status change", 400
         update_order(order, request.json)
         return order_to_json(order), 200
