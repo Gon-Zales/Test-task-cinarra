@@ -46,6 +46,6 @@ class Order(BaseModel):
             address_to=order['address_to'],
             client_id=order['client_id'],
             driver_id=order['driver_id'],
-            date_created=datetime.strptime(order['date_created'], '%Y-%m-%d %H:%M:%S'),
+            date_created=datetime.fromisoformat(order['date_created']),
             status=order['status']
         )

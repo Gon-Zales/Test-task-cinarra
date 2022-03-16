@@ -16,7 +16,7 @@ def order_to_json(order: Order):
         'id': order.get_id(),
         'client_id': order.client_id.get_id(),
         'driver_id': order.driver_id.get_id(),
-        "date_created": order.date_created.__format__("%Y-%m-%d %H:%M:%S"),
+        "date_created": order.date_created.isoformat(),
         "status": order.status,
         "address_from": order.address_from,
         "address_to": order.address_to,
@@ -55,7 +55,7 @@ def update_order(order, json):
     if json["status"] == NOT_ACCEPTED:
         order.client_id = json['client_id']
         order.driver_id = json['driver_id']
-        order.date_created = datetime.strptime(json['date_created'], '%Y-%m-%d %H:%M:%S')
+        order.date_created = datetime.fromisoformat(json['date_created'])
     else:
         order.status = json["status"]
     order.save()

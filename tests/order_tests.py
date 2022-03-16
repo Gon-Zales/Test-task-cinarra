@@ -11,7 +11,7 @@ def get_stub():
     return {
         "client_id": client_id,
         "driver_id": driver_id,
-        "date_created": "2022-03-13 14:45:50",
+        "date_created": "2022-03-16T14:01:03",
         "status": NOT_ACCEPTED,
         "address_from": "dsd",
         "address_to": "dsd",
@@ -98,7 +98,7 @@ def test_order_change(client):
 
     stub["client_id"] = client_id
     stub["driver_id"] = driver_id
-    stub["date_created"] = "2021-03-13 14:45:50"
+    stub["date_created"] = "2021-03-16T14:01:03"
     response = client.put(f'/api/v1/orders/{order_id}', json=stub)
     assert response.status_code == 200
 
