@@ -2,8 +2,6 @@ from client_tests import stub as client_stub
 from driver_tests import stub as driver_stub
 from models.order_model import ORDER_STATUS, NOT_ACCEPTED, IN_PROGRESS, CANCELLED, DONE
 
-order_id = -89
-
 STATUS_CHANGE = [
     (NOT_ACCEPTED, NOT_ACCEPTED, True),
     (NOT_ACCEPTED, IN_PROGRESS, True),
@@ -38,9 +36,9 @@ def get_stub(client):
 
 
 def stub_w_id(client):
-    res = get_stub(client).copy()
-    res["id"] = order_id
-    return res
+    stub = get_stub(client).copy()
+    stub["id"] = client.post('/api/v1/orders', json=stub).json["id"]
+    return stub
 
 
 def compare_order(d1, d2, ignore_id):
@@ -67,8 +65,6 @@ def test_order_create(client):
         stub["status"] = ORDER_STATUS[i]
         response = client.post('/api/v1/orders', json=stub)
         assert response.status_code == 400
-    global order_id
-    order_id = order["id"]
 
 
 def test_order_find(client):
@@ -98,18 +94,18 @@ def test_order_status_change(client):
 
 
 def test_order_change(client):
-    order_json = client.get('/api/v1/orders', query_string={"orderId": order_id}).json
+    stub = stub_w_id(client)
+    order_id = stub["id"]
 
-    illegal_json = order_json.copy()
+    illegal_json = stub.copy()
     illegal_json["client_id"] = 1234
     response = client.put(f'/api/v1/orders/{order_id}', json=illegal_json)
     assert response.status_code == 400
-    illegal_json = order_json.copy()
+    illegal_json = stub.copy()
     illegal_json["driver_id"] = 1234
     response = client.put(f'/api/v1/orders/{order_id}', json=illegal_json)
     assert response.status_code == 400
 
-    stub = stub_w_id(client)
     stub["date_created"] = "2021-03-16T14:01:03"
     response = client.put(f'/api/v1/orders/{order_id}', json=stub)
     assert response.status_code == 200
